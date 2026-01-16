@@ -1,0 +1,13 @@
+name: calc
+version: 0.0.1
+
+authors:
+  - TSOA2 <zachary@gadad.net>
+
+targets:
+  calc:
+    main: src/main.cr
+
+crystal: '>= 1.18.2'
+
+license: MIT
