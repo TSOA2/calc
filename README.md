@@ -1,7 +1,7 @@
 # Calculator
 
 ## About
-A commandline to calculate integrals/derivatives (and maybe more later) of
+A commandline tool to calculate integrals/derivatives (and maybe more later) of
 mathematical expressions. For now, the expressions can only have one variable
 in them (derivatives always differentiate with respect to X, as do integrals
 integrate).  
@@ -11,12 +11,12 @@ Made in school on a Chromebook using Godbolt.
 ## Usage
 ### Integration
 ```
-calc "x^2 + 3x + 5" i midpoint 0 5 4
-     ^- expression  ^ ^        ^ ^ ^- # of parts
-                    ^ ^        ^ ^- high
-                    ^ ^        ^- low
-                    ^ ^- method
-                    ^- i for integration
+calc "x^2 + 3*x + 5" i midpoint 0 5 4
+     ^- expression   ^ ^        ^ ^ ^- # of parts
+                     ^ ^        ^ ^- high
+                     ^ ^        ^- low
+                     ^ ^- method
+                     ^- i for integration
 ```
 
 Methods include:  
@@ -30,8 +30,8 @@ A higher # of parts will give you more precision.
 
 ### Differentiation
 ```
-calc "x^2 + 3x + 5" d
-                    ^- d for differentiation
+calc "x^2 + 3*x + 5" d
+                     ^- d for differentiation
 ```
 
 Finds the derivative with respect to x.
@@ -49,7 +49,7 @@ There's definitely more to add here.
 
 You can chain together operations like this:  
 ```
-calc "x^(3/2) - 2 * (1 / x) i d d s
+calc "x^(3/2) - 2 * (1 / x) i midpoint 1 2 3 d d s
 ```
 
 ## Building

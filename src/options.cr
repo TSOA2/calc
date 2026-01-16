@@ -86,8 +86,7 @@ module Calc
     end
 
     def usage
-      STDERR.puts "
-Usage: calc [expr] [ids]
+      STDERR.puts "Usage: calc [expr] [ids]
 Integration:
   calc \"x^2\" i lefthand 0 5 4
   0 = low, 5 = high, 4 = parts
@@ -102,9 +101,8 @@ Derivation:
 Simplification:
   calc \"5*x/5\" s
 
-You can combine some, like derivation and simplification:
-  calc \"5*x/5\" d s
-      "
+You can combine operations:
+  calc \"5*x/5\" d s"
     end
 
     def get_next : String?
