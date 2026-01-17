@@ -7,6 +7,7 @@ module Calc
       Integrate
       Derivative
       Simplify
+      Execute
     end
 
     struct IGStep
@@ -43,9 +44,15 @@ module Calc
       end
     end
 
+    struct EXStep
+      property x : Float64
+      def initialize(@x)
+      end
+    end
+
     struct Step
       property id : ID
-      property data : IGStep | DVStep | SPStep
+      property data : IGStep | DVStep | SPStep | EXStep
 
       def initialize(@id, @data)
       end
@@ -55,35 +62,6 @@ module Calc
     property steps : Array(Step)
     @args : Array(String)
     @i    : UInt64
-
-    def initialize
-      if ARGV.size == 0
-        usage
-        exit 1
-      end
-
-      @expr = ARGV[0]
-      @steps = [] of Step
-      @args = ARGV[1..ARGV.size]
-      @i = 0
-
-      while @i < @args.size
-        arg = get_next.not_nil!
-        case arg
-        when "i"
-          ig = get_integral
-          if !ig
-            STDERR.puts "Expected integral arguments after \"i\": method, low, high, parts."
-            exit 1
-          end
-          @steps << Step.new(ID::Integrate, ig)
-        when "d"
-          @steps << Step.new(ID::Derivative, get_derivative)
-        when "s"
-          @steps << Step.new(ID::Simplify, get_simplify)
-        end
-      end
-    end
 
     def usage
       STDERR.puts "Usage: calc [expr] [ids]
@@ -103,6 +81,50 @@ Simplification:
 
 You can combine operations:
   calc \"5*x/5\" d s"
+      exit 1
+    end
+
+    def argument_err(c, args)
+      STDERR.puts "Expected arguments after \"#{c}\": #{args}"
+      exit 1
+    end
+
+    def float_err
+      STDERR.puts "Invalid formatting of number.\n"
+      exit 1
+    end
+
+    def initialize
+      if ARGV.size == 0
+        usage
+      end
+
+      @expr = ARGV[0]
+      @steps = [] of Step
+      @args = ARGV[1..ARGV.size]
+      @i = 0
+
+      while @i < @args.size
+        arg = get_next.not_nil!
+        case arg
+        when "i"
+          ig = get_integral
+          if !ig
+            argument_err("i", ["method", "low", "high", "parts"])
+          end
+          @steps << Step.new(ID::Integrate, ig)
+        when "x"
+          ex = get_execute
+          if !ex
+            argument_err("x", ["x value"])
+          end
+          @steps << Step.new(ID::Execute, ex)
+        when "d"
+          @steps << Step.new(ID::Derivative, get_derivative)
+        when "s"
+          @steps << Step.new(ID::Simplify, get_simplify)
+        end
+      end
     end
 
     def get_next : String?
@@ -111,11 +133,6 @@ You can combine operations:
         @i += 1
         arg
       end
-    end
-
-    def float_err
-      STDERR.puts "Invalid formatting of number.\n"
-      exit 1
     end
 
     def get_integral : IGStep?
@@ -152,6 +169,19 @@ You can combine operations:
       end
 
       IGStep.new(method, low.not_nil!, high.not_nil!, parts.not_nil!)
+    end
+
+    def get_execute : EXStep?
+      x = get_next
+      if !x
+        return nil
+      end
+      x = x.to_f64?
+      if !x
+        float_err
+      end
+
+      EXStep.new(x.not_nil!)
     end
 
     def get_derivative : DVStep

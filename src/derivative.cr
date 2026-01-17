@@ -2,11 +2,8 @@ require "./parse.cr"
 require "./lex.cr"
 
 module Calc
-  struct DV
-    def initialize
-    end
-
-    def diff(ast : Parser::Node) : Parser::Node
+  module DV
+    def self.diff(ast : Parser::Node) : Parser::Node
       case ast.id
       when ID::Power
         bn = ast.as(BN)
@@ -54,7 +51,7 @@ module Calc
       end
     end
 
-    def diff(runner : Runner) : Parser::Node
+    def self.diff(runner : Runner) : Parser::Node
       diff(runner.ast)
     end
   end

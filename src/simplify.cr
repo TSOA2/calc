@@ -2,11 +2,8 @@ require "./parse.cr"
 require "./lex.cr"
 
 module Calc
-  struct SP
-    def initialize
-    end
-
-    private def combine_nums(n : BN) : Parser::Node
+  module SP
+    private def self.combine_nums(n : BN) : Parser::Node
       if n.left.id == ID::Number && n.right.id == ID::Number
         NN.new(n.eval)
       else
@@ -14,7 +11,7 @@ module Calc
       end
     end
 
-    private def simplify_pow(n : BN) : Parser::Node
+    private def self.simplify_pow(n : BN) : Parser::Node
       r = simplify n.right
       if r.id == ID::Number
         if r.as(NN).num == 0.0
@@ -26,7 +23,7 @@ module Calc
       BN.new(ID::Power, simplify(n.left), r)
     end
 
-    private def simplify_mul(n : BN) : Parser::Node
+    private def self.simplify_mul(n : BN) : Parser::Node
       lr = {simplify(n.left), simplify(n.right)}
       rl = lr.reverse
       lr.map_with_index { |s, i|
@@ -62,7 +59,7 @@ module Calc
       return BN.new(ID::Multiply, lr[0], lr[1])
     end
 
-    private def simplify_div(n : BN) : Parser::Node
+    private def self.simplify_div(n : BN) : Parser::Node
       l, r = {simplify(n.left), simplify(n.right)}
       if l.id == ID::Number
         if l.as(NN).num == 0.0
@@ -80,7 +77,7 @@ module Calc
       BN.new(ID::Divide, l, r)
     end
 
-    private def simplify_plus(n : BN) : Parser::Node
+    private def self.simplify_plus(n : BN) : Parser::Node
       lr = {simplify(n.left), simplify(n.right)}
       rl = lr.reverse
       lr.map_with_index { |s, i|
@@ -114,7 +111,7 @@ module Calc
       BN.new(ID::Plus, lr[0], lr[1])
     end
 
-    private def simplify_minus(n : BN) : Parser::Node
+    private def self.simplify_minus(n : BN) : Parser::Node
       l, r = {simplify(n.left), simplify(n.right)}
       if r.id == ID::Number
         if r.as(NN).num == 0.0
@@ -128,7 +125,7 @@ module Calc
       BN.new(ID::Minus, l, r)
     end
 
-    def simplify(ast : Parser::Node) : Parser::Node
+    def self.simplify(ast : Parser::Node) : Parser::Node
       if ast.id == ID::Number || ast.id == ID::X
         return ast.clone
       end
@@ -151,7 +148,7 @@ module Calc
       combine_nums(bn)
     end
 
-    def simplify(runner : Runner) : Parser::Node
+    def self.simplify(runner : Runner) : Parser::Node
       simplify(runner.ast)
     end
   end

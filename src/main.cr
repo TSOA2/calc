@@ -22,13 +22,15 @@ module Calc
         val = ig.integrate(Runner.new(parser, ast))
         puts "Integration: #{val}"
       when Options::ID::Derivative
-        dv = DV.new
-        ast = dv.diff(ast)
+        ast = DV.diff(ast)
         puts "Derivative: #{ast}"
       when Options::ID::Simplify
-        sp = SP.new
-        ast = sp.simplify(ast)
+        ast = SP.simplify(ast)
         puts "Simplified: #{ast}"
+      when Options::ID::Execute
+        data = step.data.as(Options::EXStep)
+        val = Runner.new(parser, ast).run(data.x)
+        puts "Execute: #{val}"
       end
     }
   end
