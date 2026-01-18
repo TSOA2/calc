@@ -71,7 +71,7 @@ module Calc
           break
         end
 
-        num += num*10 + expr[i].to_f
+        num = num*10 + expr[i].to_f
         i += 1
       end
 

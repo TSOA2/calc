@@ -5,9 +5,17 @@ module Calc
     alias TokList = Lexer::TokenList
     alias ID = Lexer::ID
 
+    enum Type
+      BinNode
+      UnaryNode
+      NumNode
+      XNode
+    end
+
     abstract class Node
+      property type : Type
       property id : ID
-      def initialize(@id)
+      def initialize(@type, @id)
       end
 
       # All these functions are recursive.
@@ -32,7 +40,7 @@ module Calc
       property left : Node
       property right : Node
 
-      def initialize(@id, @left, @right)
+      def initialize(@id, @left, @right, @type = Type::BinNode)
       end
 
       def is_constant : Bool
@@ -79,7 +87,7 @@ module Calc
 
     class UnaryNode < Node
       property node : Node
-      def initialize(@id, @node)
+      def initialize(@id, @node, @type = Type::UnaryNode)
       end
 
       def is_constant : Bool
@@ -116,7 +124,7 @@ module Calc
     class NumNode < Node
       property num : Float64
 
-      def initialize(@num, @id = ID::Number)
+      def initialize(@num, @type = Type::NumNode, @id = ID::Number)
       end
 
       def is_constant : Bool
@@ -146,7 +154,7 @@ module Calc
 
     class XNode < Node
       property xnum : Float64*
-      def initialize(@xnum, @id = ID::X)
+      def initialize(@xnum, @type = Type::XNode, @id = ID::X)
       end
 
       def is_constant : Bool
@@ -235,7 +243,7 @@ module Calc
       tok = @toks[@i]
       if tok.id == ID::Minus
         @i += 1
-        return UnaryNode.new(tok.id, parse_unary)
+        return UnaryNode.new(ID::Minus, parse_unary)
       end
       return parse_prim
     end
@@ -290,4 +298,5 @@ module Calc
 
   alias BN = Parser::BinNode
   alias NN = Parser::NumNode
+  alias Type = Parser::Type
 end

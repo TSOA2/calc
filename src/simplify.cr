@@ -126,26 +126,26 @@ module Calc
     end
 
     def self.simplify(ast : Parser::Node) : Parser::Node
-      if ast.id == ID::Number || ast.id == ID::X
-        return ast.clone
-      end
+      if ast.type == Type::BinNode
+        node = case ast.id
+        when ID::Power    then simplify_pow(ast.as(BN))
+        when ID::Multiply then simplify_mul(ast.as(BN))
+        when ID::Divide   then simplify_div(ast.as(BN))
+        when ID::Plus     then simplify_plus(ast.as(BN))
+        when ID::Minus    then simplify_minus(ast.as(BN))
+        else
+          raise "Invalid AST node to simplify."
+        end
 
-      node = case ast.id
-      when ID::Power    then simplify_pow(ast.as(BN))
-      when ID::Multiply then simplify_mul(ast.as(BN))
-      when ID::Divide   then simplify_div(ast.as(BN))
-      when ID::Plus     then simplify_plus(ast.as(BN))
-      when ID::Minus    then simplify_minus(ast.as(BN))
+        if node.type == Type::BinNode
+          bn = node.as(BN)
+          combine_nums(bn)
+        else
+          node
+        end
       else
-        raise "Invalid AST node to simplify."
+        ast.clone
       end
-
-      if node.id == ID::Number || node.id == ID::X
-        return node
-      end
-
-      bn = node.as(BN)
-      combine_nums(bn)
     end
 
     def self.simplify(runner : Runner) : Parser::Node
